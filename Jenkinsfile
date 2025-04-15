@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Dheerajkurupati/InsuranceDevops.git'
+                git 'https://github.com/Dheerajkurupati/InsuranceDevops.git', branch: 'main'
             }
         }
 
