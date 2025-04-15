@@ -18,28 +18,28 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'pip install -r requirements.txt'
+                bat 'pip install -r requirements.txt'
             }
         }
 
         stage('Lint Code') {
             steps {
                 echo 'Linting the Python code...'
-                sh 'pip install flake8 && flake8 app.py'
+                bat 'pip install flake8 && flake8 app.py'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                bat "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
 
         stage('Run Docker Container (Optional)') {
             steps {
                 echo 'Running Docker container locally (optional)...'
-                sh "docker run -d -p 10000:10000 ${IMAGE_NAME}:${IMAGE_TAG}"
+                bat "docker run -d -p 10000:10000 ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
@@ -50,9 +50,9 @@ pipeline {
             steps {
                 echo "Pushing to Docker Hub..."
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh 'echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin'
-                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                    sh "docker push ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                    bat 'echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin'
+                    bat "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                    bat "docker push ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
                 }
             }
         }
@@ -61,8 +61,8 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            sh 'docker container prune -f || true'
-            sh 'docker image prune -f || true'
+            bat 'docker container prune -f || true'
+            bat 'docker image prune -f || true'
         }
         success {
             echo 'Deployment pipeline executed successfully!'
