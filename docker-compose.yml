@@ -10,4 +10,9 @@ services:
       - .:/app
     environment:
       - FLASK_ENV=development
+    command: flask run --host=0.0.0.0 --port=10000
+    healthcheck:
+      test: curl --fail http://localhost:10000 || exit 1
+      interval: 10s
+      retries: 5
 
