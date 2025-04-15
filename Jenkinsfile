@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'flask-insurance-app'
+        IMAGE_NAME = 'insurance-application'
         IMAGE_TAG = 'latest'
-        DOCKER_HUB_REPO = 'your-dockerhub-username/flask-insurance-app'
+        DOCKER_HUB_REPO = 'dheerajk04/insurance-application'
     }
 
     stages {
