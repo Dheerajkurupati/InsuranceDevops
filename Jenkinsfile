@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "house-price-predictor"
-        APP_URL = "http://localhost:10000"
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -15,13 +10,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %IMAGE_NAME% ."
+                bat 'docker build -t house-price-predictor .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                bat "docker-compose up -d"
+                bat 'docker-compose down || exit 0' // Stop any running container first
+                bat 'docker-compose up -d'
             }
         }
 
@@ -29,22 +25,15 @@ pipeline {
             steps {
                 bat '''
                     echo Waiting for app to be ready...
-                    timeout /T 15 /NOBREAK
+                    ping 127.0.0.1 -n 20 > nul
                 '''
             }
         }
 
         stage('Test App') {
             steps {
-                bat "curl %APP_URL%"
+                bat 'curl --retry 5 --retry-delay 10 http://localhost:10000 || exit /b 1'
             }
-        }
-    }
-
-    post {
-        always {
-            echo 'Cleaning up containers...'
-            bat "docker-compose down"
         }
     }
 }
